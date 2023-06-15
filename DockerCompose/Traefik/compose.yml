@@ -1,0 +1,34 @@
+services:
+  traefik:
+    image: traefik:v2.5
+    container_name: traefik
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik_dashboard.rule=Host(`my-domain.exemple`)" # change this to your domain
+      - "traefik.http.routers.traefik_dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik_dashboard.tls.certresolver=production"
+      - "traefik.http.routers.traefik_dashboard.service=api@internal"
+    volumes:
+      - /etc/traefik:/etc/traefik
+      - traefik-ssl-certs:/ssl-certs
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 80:80
+      - 443:443
+      # (optional) expose the dashboard !don't use in production!
+      # - 8080:8080  
+    networks:
+      - traefik_network
+
+
+volumes: 
+  # Create volume before running docker-compose
+  traefik-ssl-certs:
+    external: true
+
+
+networks:
+  # Create volume before running docker-compose
+  traefik_network:
+    external: true
