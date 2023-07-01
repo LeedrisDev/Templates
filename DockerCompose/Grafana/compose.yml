@@ -2,13 +2,33 @@ services:
   grafana:
     image: grafana/grafana-oss:latest
     container_name: grafana
-    ports:
-      - "3000:3000"
+    restart: unless-stopped
+    # Uncomment the following lines if you want to use Traefik
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.portainer.entrypoints=websecure"
+    #   - "traefik.http.routers.portainer.rule=Host(`my-domain.exemple`)" # Change this to your domain
+    #   - "traefik.http.services.portainer.loadbalancer.server.port=3000"
+    #   - "traefik.http.routers.portainer.tls=true"
+    #   - "traefik.http.routers.portainer.tls.certresolver=production"
     volumes:
       - grafana_data:/var/lib/grafana
-    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    # networks:
+      # - traefik_network # Uncomment this line if you want to use Traefik
+      # - monitoring_network # Uncomment this line if you put Prometheus in the same compose file
 
 
 volumes:
   grafana_data:
     driver: local
+
+
+# networks:
+  # Uncomment the following lines if you want to use Traefik
+  # traefik_network:
+  #   external: true
+  # Uncomment the following lines if you put Prometheus in the same compose file
+  # monitoring_network:
+  #   driver: bridge
