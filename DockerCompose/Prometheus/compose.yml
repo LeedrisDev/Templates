@@ -7,9 +7,9 @@ services:
     volumes:
       - /etc/prometheus:/etc/prometheus
       - prometheus_data:/prometheus
-    ports:
-      - 127.0.0.1:9090:9090
-      # - 9090:9090 # Uncomment this line if you want to access Prometheus from the host
+    # ports:
+    #   - 127.0.0.1:9090:9090 # Uncomment this line if you want to access Prometheus from localhost only
+    #   - 9090:9090 # Uncomment this line if you want to access Prometheus from outside of the server
 
 
 volumes:
