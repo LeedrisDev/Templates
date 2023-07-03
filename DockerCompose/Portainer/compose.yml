@@ -1,0 +1,31 @@
+services:
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    restart: always
+    ports:
+      - 8000:8000
+      # - 9000:9000 # Uncomment this line if you don't use traefik
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.routers.portainer.rule=Host(`my-domain.exemple`)" # Change this to your domain
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+      - "traefik.http.routers.portainer.tls=true"
+      - "traefik.http.routers.portainer.tls.certresolver=production"
+    networks:
+      - traefik_network
+
+
+volumes:
+  # Create volume before running docker-compose
+  portainer_data: 
+    external: true
+
+
+networks:
+  traefik_network:
+    external: true
