@@ -1,0 +1,6 @@
+# Namespace template
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: your-namespace
