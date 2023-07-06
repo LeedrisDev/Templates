@@ -1,0 +1,19 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: appname
+  namespace: namespace
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - kind: Rule
+    match: Host(`your-hostname.com`)
+    services:
+    - kind: Service
+      name: service # The name of the service
+      namespace: namespace # Name of the namespace where the service is located
+      port: 80 # Service Portnumber
+  # Should match the certResolver name in your traefik configuration
+  tls:
+    certResolver: production
