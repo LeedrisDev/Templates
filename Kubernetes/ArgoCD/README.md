@@ -20,6 +20,15 @@ Then apply the ingress configuration to expose ArgoCD:
 kubectl apply -f ingress.yaml
 ```
 
+You need then to run in insecure mode:
+
+```bash
+kubectl edit deployment argocd-server -n argocd
+```
+
+Locate the `args` section under the `spec.template.spec.containers` section of the YAML.
+Add the following argument to the args section : `--insecure`.
+
 Now we can access ArgoCD via the ingress address. The default username is `admin` and the password is obtained by running:
 
 ```bash
