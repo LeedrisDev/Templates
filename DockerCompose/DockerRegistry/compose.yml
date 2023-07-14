@@ -1,0 +1,36 @@
+services:
+  registry:
+    image: registry:latest
+    restart: always
+    container_name: docker-registry
+    # Uncomment the following lines if you want to use Traefik
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.docker.network=traefik_network"
+    #   - "traefik.http.routers.registry.entrypoints=websecure"
+    #   - "traefik.http.routers.registry.rule=Host(`my-domain-exemple.com`)" # Replace with your domain
+    #   - "traefik.http.services.registry.loadbalancer.server.port=5000"
+    #   - "traefik.http.routers.registry.tls=true"
+    #   - "traefik.http.routers.registry.tls.certresolver=production"
+    ports:
+      - "5000:5000"
+    environment:
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: Registry
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/registry.password
+      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
+      REGISTRY_STORAGE_DELETE_ENABLED: true                           # Enable deletion of images
+      REGISTRY_STORAGE_MAINTENANCE_REPOSITORYPURGE_ENABLED: true      # Enable auto delete
+      REGISTRY_STORAGE_MAINTENANCE_REPOSITORYPURGE_SCHEDULE: "daily"  # Delete every day
+      REGISTRY_STORAGE_MAINTENANCE_REPOSITORYPURGE_READONLY: true     # Disable write while deleting
+    volumes:
+      - /etc/docker/registry/data:/data
+      - /etc/docker/registry/auth:/auth
+    # networks:
+    #   - traefik_network
+
+
+# Traefik network
+# networks:
+#   traefik_network:
+#     external: true
