@@ -19,7 +19,10 @@ services:
       REGISTRY_AUTH_HTPASSWD_REALM: Registry
       REGISTRY_AUTH_HTPASSWD_PATH: /auth/registry.password
       REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
-      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+      REGISTRY_STORAGE_DELETE_ENABLED: true                           # Enable deletion of images
+      REGISTRY_STORAGE_MAINTENANCE_REPOSITORYPURGE_ENABLED: true      # Enable auto delete
+      REGISTRY_STORAGE_MAINTENANCE_REPOSITORYPURGE_SCHEDULE: "daily"  # Delete every day
+      REGISTRY_STORAGE_MAINTENANCE_REPOSITORYPURGE_READONLY: true     # Disable write while deleting
     volumes:
       - /etc/docker/registry/data:/data
       - /etc/docker/registry/auth:/auth
