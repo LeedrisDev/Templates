@@ -1,0 +1,43 @@
+services:
+    # Database for Semaphore
+    postgres:
+        container_name: postgres
+        restart: unless-stopped
+        image: postgres:16.1-alpine3.18
+        hostname: postgres
+        volumes: 
+            - semaphore-postgres:/var/lib/postgresql/data
+        environment:
+            POSTGRES_USER: semaphore                        # Change this to a secure username
+            POSTGRES_PASSWORD: semaphore                    # Change this to a secure password
+            POSTGRES_DB: semaphore
+
+    semaphore:
+        container_name: semaphore
+        restart: unless-stopped
+        image: semaphoreui/semaphore:v2.9.37
+        environment:
+            SEMAPHORE_DB_USER: semaphore                    # Must match POSTGRES_USER
+            SEMAPHORE_DB_PASS: semaphore                    # Must match POSTGRES_PASSWORD
+            SEMAPHORE_DB_HOST: postgres
+            SEMAPHORE_DB_PORT: 5432
+            SEMAPHORE_DB_DIALECT: postgres
+            SEMAPHORE_DB: semaphore                         # Must match POSTGRES_DB
+            SEMAPHORE_PLAYBOOK_PATH: /tmp/semaphore/
+            SEMAPHORE_ADMIN_PASSWORD: changeme              # Change this to your desired admin password
+            SEMAPHORE_ADMIN_NAME: admin                     # Change this to your desired admin name
+            SEMAPHORE_ADMIN_EMAIL: admin@localhost          # Change this to your desired admin email
+            SEMAPHORE_ADMIN: admin                          # Change this to your desired admin username
+            SEMAPHORE_ACCESS_KEY_ENCRYPTION: MKBMRtz9qfL0fovQ7T3Nl8V1QTkcdq9VVQKdrsd6LD0=       # Generate a new encryption key with head -c32 /dev/urandom | base64
+        depends_on:
+            - postgres
+        ports:
+            - 3000:3000
+
+networks:
+    traefik_network:
+        external: true
+
+volumes:
+    semaphore-postgres:
+        driver: local
