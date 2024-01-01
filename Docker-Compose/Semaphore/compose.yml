@@ -34,6 +34,7 @@ services:
         ports:
             - 3000:3000
 
+# Comment out the following section if you are not using Traefik
 networks:
     traefik_network:
         external: true
