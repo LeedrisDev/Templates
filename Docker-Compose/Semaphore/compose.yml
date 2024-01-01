@@ -11,6 +11,8 @@ services:
             POSTGRES_USER: semaphore                        # Change this to a secure username
             POSTGRES_PASSWORD: semaphore                    # Change this to a secure password
             POSTGRES_DB: semaphore
+        networks:
+            - internal
 
     semaphore:
         container_name: semaphore
@@ -29,15 +31,32 @@ services:
             SEMAPHORE_ADMIN_EMAIL: admin@localhost          # Change this to your desired admin email
             SEMAPHORE_ADMIN: admin                          # Change this to your desired admin username
             SEMAPHORE_ACCESS_KEY_ENCRYPTION: MKBMRtz9qfL0fovQ7T3Nl8V1QTkcdq9VVQKdrsd6LD0=       # Generate a new encryption key with head -c32 /dev/urandom | base64
+        # Uncomment the following section if you are using Traefik
+        # labels:
+        #     - "traefik.enable=true"
+        #     - "traefik.docker.network=traefik_network"
+        #     - "traefik.http.routers.ansible.entrypoints=websecure"
+        #     - "traefik.http.routers.ansible.rule=Host(`ansible-semaphore.leedrisdev.com`)"
+        #     - "traefik.http.services.ansible.loadbalancer.server.port=3000"
+        #     - "traefik.http.routers.ansible.tls=true"
+        #     - "traefik.http.routers.ansible.tls.certresolver=production"
         depends_on:
             - postgres
+        # In production, do not expose directly to the internet. Use a reverse proxy like Traefik instead and remove the ports section
         ports:
             - 3000:3000
+        networks:
+            # - traefik_network # Uncomment this line if you are using Traefik
+            - internal
 
 # Comment out the following section if you are not using Traefik
 networks:
-    traefik_network:
-        external: true
+    # Uncomment the following section if you are using Traefik
+    # traefik_network:
+    #     external: true
+    
+    internal:
+        driver: bridge
 
 volumes:
     semaphore-postgres:
