@@ -1,0 +1,11 @@
+- name: Change sudoers file
+  hosts: all
+  become: yes
+  tasks:
+    - name: Add leedris user to sudoers file
+      lineinfile:
+        path: /etc/sudoers
+        line: "leedris ALL=(ALL) NOPASSWD: ALL"
+        insertafter: EOF
+        state: present
+        validate: "/usr/sbin/visudo -cf %s"
