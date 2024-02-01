@@ -1,0 +1,63 @@
+- name: install k3s
+  hosts: all
+  become: true
+  tasks:
+    - name: Test reachability
+      ansible.builtin.ping:
+
+    - name: Allow traffic on port 6443 for apiserver
+      tags: setup_ufw_rules
+      ufw:
+        rule: allow
+        port: 6443
+        proto: tcp
+        state: enabled
+
+    - name: Allow traffic from 10.42.0.0/16 to any for pods
+      tags: setup_ufw_rules
+      ufw:
+        rule: allow
+        from_ip: 10.42.0.0/16
+        to_ip: any
+        proto: tcp
+        state: enabled
+
+    - name: Allow traffic from 10.43.0.0/16 to any for services
+      tags: setup_ufw_rules
+      ufw:
+        rule: allow
+        from_ip: 10.43.0.0/16
+        to_ip: any
+        proto: tcp
+        state: enabled
+
+    - name: Download and install k3s with embedded etcd
+      shell: "curl -sfL https://get.k3s.io | sh -s - server --token=<YOUR-SECRET> --tls-san <your-dns-name> --tls-san <your-lb-ip-address> --cluster-init"
+      args:
+        executable: /bin/bash
+      async: 600
+      poll: 0
+      register: k3s_install
+
+    - name: Wait for k3s installation to complete
+      async_status:
+        jid: "{{ k3s_install.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      retries: 60
+      delay: 10
+
+    - name: Get kubeconfig
+      fetch:
+        src: "/etc/rancher/k3s/k3s.yaml"
+        dest: "{{ playbook_dir }}/kubeconfig"
+        flat: yes
+
+    - name: Set kubeconfig environment variable
+      set_fact:
+        kubeconfig_path: "{{ playbook_dir }}/kubeconfig"
+
+    - name: Display kubeconfig path
+      debug:
+        var: kubeconfig_path
+      when: job_result.finished
