@@ -4,3 +4,29 @@
   tasks:
     - name: Execute k3s agent uninstall script
       shell: "/usr/local/bin/k3s-uninstall.sh"
+
+    - name: Allow traffic on port 6443 for apiserver
+      tags: setup_ufw_rules
+      ufw:
+        rule: allow
+        port: 6443
+        proto: tcp
+        delete: true
+
+    - name: Allow traffic from 10.42.0.0/16 to any for pods
+      tags: setup_ufw_rules
+      ufw:
+        rule: allow
+        from_ip: 10.42.0.0/16
+        to_ip: any
+        proto: tcp
+        delete: true
+
+    - name: Allow traffic from 10.43.0.0/16 to any for services
+      tags: setup_ufw_rules
+      ufw:
+        rule: allow
+        from_ip: 10.43.0.0/16
+        to_ip: any
+        proto: tcp
+        delete: true
