@@ -1,0 +1,16 @@
+---
+- name: Install nvm
+  hosts: localhost
+  become: no
+
+  tasks:
+    - name: Download nvm installation script
+      shell: wget -q https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh -O install.sh
+
+    - name: Install nvm
+      shell: bash install.sh
+
+    - name: Remove the installation script
+      file:
+        path: install.sh
+        state: absent
