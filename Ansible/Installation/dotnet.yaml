@@ -1,0 +1,31 @@
+---
+- name: Install .NET SDK
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Download Microsoft signing key and repository
+      shell: wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+
+    - name: Install Microsoft signing key and repository
+      apt:
+        deb: packages-microsoft-prod.deb
+
+    - name: Remove the downloaded .deb file
+      file:
+        path: packages-microsoft-prod.deb
+        state: absent
+
+    - name: Update apt package cache
+      apt:
+        update_cache: yes
+
+    - name: Install zlib1g
+      apt:
+        name: zlib1g
+        state: present
+
+    - name: Install the .NET SDK 8.0
+      apt:
+          name: dotnet-sdk-8.0
+          state: present
